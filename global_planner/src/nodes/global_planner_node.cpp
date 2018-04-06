@@ -33,6 +33,7 @@ GlobalPlannerNode::GlobalPlannerNode() {
   depth_camera_sub_ = nh_.subscribe(
       "/camera/depth/points", 1, &GlobalPlannerNode::depthCameraCallback, this);
   fcu_input_sub_ = nh_.subscribe("/mavros/trajectory/desired", 1, &GlobalPlannerNode::fcuInputGoalCallback, this);
+  mission_item_seq_sub_ = nh_.subscribe("/mavros/mission/reached", 1, &GlobalPlannerNode::missionItemCallback, this);
 
   // Publishers
   three_points_pub_ = nh_.advertise<nav_msgs::Path>("/three_points", 10);
@@ -265,6 +266,10 @@ void GlobalPlannerNode::fcuInputGoalCallback(const mavros_msgs::Trajectory &msg)
   }
 }
 
+void GlobalPlannerNode::missionItemCallback(const mavros_msgs::WaypointReached &msg) {
+
+  current_mission_item_seq_ = msg.wp_seq;
+}
 
 // If the laser senses something too close to current position, it is considered
 // a crash

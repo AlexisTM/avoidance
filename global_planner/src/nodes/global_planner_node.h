@@ -10,6 +10,7 @@
 #include <geometry_msgs/PointStamped.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <mavros_msgs/Trajectory.h>
+#include <mavros_msgs/WaypointReached.h>
 #include <nav_msgs/Odometry.h>
 #include <nav_msgs/Path.h>
 #include <pcl_conversions/pcl_conversions.h>
@@ -62,6 +63,7 @@ class GlobalPlannerNode {
   double clicked_goal_radius_;
   int simplify_iterations_;
   double simplify_margin_;
+  int current_mission_item_seq_ = 0;
 
   // Subscribers
   ros::Subscriber octomap_sub_;
@@ -74,6 +76,7 @@ class GlobalPlannerNode {
   ros::Subscriber laser_sensor_sub_;
   ros::Subscriber depth_camera_sub_;
   ros::Subscriber fcu_input_sub_;
+  ros::Subscriber mission_item_seq_sub_;
 
   // Publishers
   ros::Publisher three_points_pub_;
@@ -107,6 +110,7 @@ class GlobalPlannerNode {
   void octomapFullCallback(const octomap_msgs::Octomap& msg);
   void depthCameraCallback(const sensor_msgs::PointCloud2& msg);
   void fcuInputGoalCallback(const mavros_msgs::Trajectory &msg);
+  void missionItemCallback(const mavros_msgs::WaypointReached &msg);
 
   void publishGoal(const GoalCell& goal);
   void publishPath();
