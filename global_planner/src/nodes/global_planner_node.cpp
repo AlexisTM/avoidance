@@ -52,6 +52,7 @@ GlobalPlannerNode::GlobalPlannerNode() {
       nh_.advertise<geometry_msgs::PointStamped>("/global_temp_goal", 10);
   explored_cells_pub_ =
       nh_.advertise<visualization_msgs::MarkerArray>("/explored_cells", 10);
+  set_mission_item_seq_client_ = nh_.serviceClient<mavros_msgs::WaypointSetCurrent>("/mavros/mission/set_current");
 
   actual_path_.header.frame_id = "/world";
   listener_.waitForTransform("/fcu", "/world", ros::Time(0),
@@ -86,9 +87,20 @@ void GlobalPlannerNode::popNextGoal() {
     setNewGoal(new_goal);
   } else if (global_planner_.goal_is_blocked_) {
     // Goal is blocked but there is no other goal in waypoints_, just stop
-    ROS_INFO("  STOP  ");
-    global_planner_.stop();
-    publishPath();
+    // ROS_INFO("  STOP  ");
+    // global_planner_.stop();
+    // publishPath();
+
+    //TO DO: if there isn't any waypoint the stop
+    mavros_msgs::WaypointSetCurrent set_current;
+    set_current.request.wp_seq = current_mission_item_seq_ + 1;
+    
+    std::cout << "\033[1;33m new seq num " << set_current.request.wp_seq << " \033[0m";
+    set_mission_item_seq_client_.call(set_current);
+    if (set_current.response.success) {
+      global_planner_.goal_is_blocked_ = false;
+      std::cout << "\033[1;33m Updated Mission Item \033[0m";
+    }
   }
 }
 

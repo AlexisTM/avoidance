@@ -10,6 +10,7 @@
 #include <geometry_msgs/PointStamped.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <mavros_msgs/Trajectory.h>
+#include <mavros_msgs/WaypointSetCurrent.h>
 #include <mavros_msgs/WaypointReached.h>
 #include <nav_msgs/Odometry.h>
 #include <nav_msgs/Path.h>
@@ -89,6 +90,7 @@ class GlobalPlannerNode {
   ros::Publisher explored_cells_pub_;
   ros::Publisher global_goal_pub_;
   ros::Publisher global_temp_goal_pub_;
+  ros::ServiceClient set_mission_item_seq_client_;
 
   tf::TransformListener listener_;
 
